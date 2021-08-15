@@ -192,10 +192,9 @@ INSERT INTO logcountries(logger_event, log_id, title, description, hide,
            );;
 DELIMITER ;
 
-INSERT IGNORE INTO countries (title) VALUES ('Россия');
-INSERT IGNORE INTO countries (title) VALUES ('США');
-INSERT IGNORE INTO countries (title) VALUES ('Германия');
-INSERT IGNORE INTO countries (title) VALUES ('Австрия');
+INSERT IGNORE INTO countries (title) VALUES ('Russia');
+INSERT IGNORE INTO countries (title) VALUES ('USA');
+INSERT IGNORE INTO countries (title) VALUES ('Germany');
 
 -- ###################################################################
 -- table regions
@@ -258,10 +257,7 @@ INSERT INTO logregions(logger_event, log_id, title, description,
            );;
 DELIMITER ;
 
-INSERT IGNORE INTO regions (title, country_id) VALUES ('Москва',1);
-INSERT IGNORE INTO regions (title, country_id) VALUES ('Московская область',1);
-INSERT IGNORE INTO regions (title, country_id) VALUES ('Санкт-Петербург',1);
-INSERT IGNORE INTO regions (title, country_id) VALUES ('Ленинградская область',1);
+INSERT IGNORE INTO regions (title, country_id) VALUES ('Moscow',1);
 
 -- ###################################################################
 -- table shops
