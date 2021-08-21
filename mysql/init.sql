@@ -368,6 +368,8 @@ CREATE TABLE IF NOT EXISTS user_info(
     image_id BIGINT UNSIGNED,
     log_login_id INT UNSIGNED,
 
+    shop_id INT UNSIGNED,
+
     ip VARCHAR(20),
     platform VARCHAR(20),
     browser VARCHAR(20),
