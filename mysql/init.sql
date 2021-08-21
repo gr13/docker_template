@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS cosmetics;
-use cosmetics;
+CREATE DATABASE IF NOT EXISTS database_name;
+use database_name;
 
 -- ###################################################################
 -- table users
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS logshops(
 DELIMITER ;;
 CREATE TRIGGER logshops_ai AFTER INSERT ON shops FOR EACH ROW
 INSERT INTO logshops(logger_event, log_id, country_id, region_id,
-                      title, shop_address, shop_folder, imei, hide, log_user_id)
+                      title, shop_address, shop_folder, hide, log_user_id)
     VALUES (
            'insert',
            NEW.id,
@@ -305,7 +305,6 @@ INSERT INTO logshops(logger_event, log_id, country_id, region_id,
            NEW.title,
            NEW.shop_address,
            NEW.shop_folder,
-           NEW.imei,
            NEW.hide,
            NEW.log_user_id
            );;
@@ -313,17 +312,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE TRIGGER logshops_au AFTER UPDATE ON shops FOR EACH ROW
 INSERT INTO logshops(logger_event, log_id, country_id, region_id,
-                      title, shop_address, shop_folder, imei, hide, log_user_id)
+                      title, shop_address, shop_folder, hide, log_user_id)
     VALUES (
            'update',
            NEW.id,
            NEW.country_id,
-           NEW.service_region_id,
            NEW.region_id,
            NEW.title,
            NEW.shop_address,
            NEW.shop_folder,
-           NEW.imei,
            NEW.hide,
            NEW.log_user_id
            );;
@@ -352,11 +349,8 @@ CREATE TABLE IF NOT EXISTS images(
     PRIMARY KEY (id),
     INDEX users (user_id),
     INDEX shops (shop_id),
-    INDEX dateservers (dateserver),
-    INDEX ips (ip),
-    INDEX platforms (platform),
-    INDEX browsers (browser),
-    INDEX versions (version)
+    INDEX dateservers (date_server)
+    
 );
 
 -- ###################################################################
