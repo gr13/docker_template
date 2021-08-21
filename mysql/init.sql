@@ -378,7 +378,7 @@ CREATE TABLE IF NOT EXISTS user_info(
     PRIMARY KEY (id),
     INDEX users (user_id),
     INDEX shops (shop_id),
-    INDEX dateservers (dateserver),
+    INDEX dateservers (date_server),
     INDEX ips (ip),
     INDEX platforms (platform),
     INDEX browsers (browser),
