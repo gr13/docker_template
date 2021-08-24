@@ -1,6 +1,7 @@
 import os
+# import sys
 import logging
-from flask import Flask
+from flask import Flask, request, has_request_context
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from app.blacklist import BLACKLIST
@@ -13,8 +14,6 @@ from app.resources.user import (
     UserList
 )
 
-# from app.models.user import UserModel
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ['FLASK_SECRET_KEY']
 app.config['DEBUG'] = os.environ['DEBUG']
@@ -24,27 +23,30 @@ app.config['PROPAGATE_EXEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
+# https://flask.palletsprojects.com/en/2.0.x/logging/
+log_format = f'[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+logging.basicConfig(filename='/logs/api.log', level=logging.DEBUG, format=log_format)
+
+
 api = Api(app)
 
 jwt = JWTManager(app)
 
-
-# formatter = logging.Formatter(  # pylint: disable=invalid-name
-#     '%(asctime)s %(levelname)s %(process)d ---- %(threadName)s  '
-#     '%(module)s : %(funcName)s {%(pathname)s:%(lineno)d} %(message)s','%Y-%m-%dT%H:%M:%SZ')
-
-# handler = StreamHandler()
-# handler.setFormatter(formatter)
-
-# api.logger.setLevel(logging.DEBUG)
-# api.logger.addHandler(handler)
-# api.logger.removeHandler(default_handler)
-
-# app.logger.debug('Debug Message')
-# app.logger.info('Info Message')
-# app.logger.warning('Warning Message')
-# app.logger.error('Error Message')
-# app.logger.critical('Critical ')
+@app.before_request
+def log_request_info():
+    app.logger.info("######################################################")
+    app.logger.info("Request:")
+    if has_request_context():
+            url = request.url
+            remote_addr = request.remote_addr
+            app.logger.info(f"ip: {remote_addr}, url: {url}")
+    if request.headers:
+        app.logger.info("Headers: %s", request.headers)
+    if request.get_data():
+        app.logger.info("Body: %s", request.get_data().decode('ascii'))
+    if request.get_json():
+        app.logger.info("Json: %s", request.get_json())
+    app.logger.info("######################################################")
 
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(decrypted_token):
@@ -86,8 +88,14 @@ api.add_resource(UserLogout, '/logout')
 api.add_resource(UserList, '/users')
 
 
-
-
 @app.route("/")
 def hello():
+    app.logger.debug('Hello World!')
+    # app.logger.info('Info Message')
+    # app.logger.warning('Warning Message')
+    # app.logger.error('Error Message')
+    # app.logger.critical('Critical ')
     return "Hello World!"
+
+
+# sys.stdout = sys.stderr = open('log/flasklog.txt','wt')
