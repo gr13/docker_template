@@ -1,3 +1,4 @@
+import logging
 from flask_restful import Resource, reqparse
 from werkzeug.security import safe_str_cmp
 from app.blacklist import BLACKLIST
@@ -15,13 +16,19 @@ from flask_jwt_extended import (
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument(
-    'email',
+    "username",
     type=str,
     required=True,
     help="This field cannot be blanc."
 )
 _user_parser.add_argument(
-    'password',
+    "email",
+    type=str,
+    required=True,
+    help="This field cannot be blanc."
+)
+_user_parser.add_argument(
+    "password",
     type=str,
     required=True,
     help="This field cannot be blank."
@@ -31,12 +38,13 @@ _user_parser.add_argument(
 class UserRegister(Resource):
     def post(self):
         data = _user_parser.parse_args()
-        if UserModel.find_by_email(data['email']):
-            return {'message': 'A user with that username already exists.'}, 400
-
-        user = UserModel(data['email'], data['password'])
+        if UserModel.find_by_email(data["email"]):
+            logging.info(f"User with this email is already exists. {data['email']}")
+            return {"message": "A user with that username already exists."}, 400
+        user = UserModel(data["email"], data["username"], data["password"])
         user.save_to_db()
 
+        logging.info(f"User {data['email']} created successfully.")
         return {"message": "User created successfully."}, 201
 
 
