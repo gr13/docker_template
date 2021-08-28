@@ -17,7 +17,7 @@ from app.resources.user import (
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ['FLASK_SECRET_KEY']
 app.config['DEBUG'] = os.environ['DEBUG']
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+mysqlconnector://{os.environ['MYSQL_USER']}:{os.environ['MYSQL_PASSWORD']}@{os.environ['MYSQL_HOST']}:3306/{os.environ['MYSQL_DB']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
