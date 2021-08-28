@@ -77,9 +77,6 @@ def check_if_token_in_blacklist(decrypted_token):
 # api.add_resource(Region, '/region/<int:region_id>')
 # api.add_resource(RegionList, '/regions')
 
-# api.add_resource(SkinColor, '/skincolor/<int:skincolor_id>')
-# api.add_resource(SkinColorList, "/skincolors")
-
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')
