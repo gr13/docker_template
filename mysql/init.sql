@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX rights (right_id)
 );
 
-CREATE TABLE IF NOT EXISTS logusers (
+CREATE TABLE IF NOT EXISTS users_log (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     logger_event VARCHAR(50),
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS logusers (
 );
 
 DELIMITER ;;
-CREATE TRIGGER logusers_ai AFTER INSERT ON users FOR EACH ROW
-INSERT INTO logusers(logger_event, log_id, email, right_id, username,
+CREATE TRIGGER users_log_ai AFTER INSERT ON users FOR EACH ROW
+INSERT INTO users_log(logger_event, log_id, email, right_id, username,
           position, can_edit, can_seelog, can_seeusers,
           hide, log_user_id, log_comment)
     VALUES (
@@ -64,8 +64,8 @@ INSERT INTO logusers(logger_event, log_id, email, right_id, username,
            );;
 DELIMITER ;
 DELIMITER ;;
-CREATE TRIGGER logusers_au AFTER UPDATE ON users FOR EACH ROW
-INSERT INTO logusers(logger_event, log_id, email, right_id, username,
+CREATE TRIGGER users_log_au AFTER UPDATE ON users FOR EACH ROW
+INSERT INTO users_log(logger_event, log_id, email, right_id, username,
           position, hide, can_edit, can_seelog, can_seeusers,
           log_user_id, log_comment)
     VALUES (
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS rights(
     UNIQUE (user_right)
 );
 
-CREATE TABLE IF NOT EXISTS logrights(
+CREATE TABLE IF NOT EXISTS rights_log(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     logger_event VARCHAR(50),
@@ -110,8 +110,8 @@ CREATE TABLE IF NOT EXISTS logrights(
 );
 
 DELIMITER ;;
-CREATE TRIGGER logrights_ai AFTER INSERT ON rights FOR EACH ROW
-INSERT INTO logrights(logger_event, log_id, user_right, log_user_id)
+CREATE TRIGGER rights_log_ai AFTER INSERT ON rights FOR EACH ROW
+INSERT INTO rights_log(logger_event, log_id, user_right, log_user_id)
     VALUES (
            'insert',
            NEW.id,
@@ -120,8 +120,8 @@ INSERT INTO logrights(logger_event, log_id, user_right, log_user_id)
            );;
 DELIMITER ;
 DELIMITER ;;
-CREATE TRIGGER logrights_au AFTER UPDATE ON rights FOR EACH ROW
-INSERT INTO logrights(logger_event, log_id, user_right, log_user_id)
+CREATE TRIGGER rights_log_au AFTER UPDATE ON rights FOR EACH ROW
+INSERT INTO rights_log(logger_event, log_id, user_right, log_user_id)
     VALUES (
            'update',
            NEW.id,
@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS countries(
     UNIQUE (title)
 );
 
-CREATE TABLE IF NOT EXISTS logcountries(
+CREATE TABLE IF NOT EXISTS countries_log(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     logger_event VARCHAR(50),
@@ -166,8 +166,8 @@ CREATE TABLE IF NOT EXISTS logcountries(
 );
 
 DELIMITER ;;
-CREATE TRIGGER logcountries_ai AFTER INSERT ON countries FOR EACH ROW
-INSERT INTO logcountries(logger_event, log_id, title, description, hide,
+CREATE TRIGGER countries_log_ai AFTER INSERT ON countries FOR EACH ROW
+INSERT INTO countries_log(logger_event, log_id, title, description, hide,
           log_user_id)
     VALUES (
            'insert',
@@ -179,8 +179,8 @@ INSERT INTO logcountries(logger_event, log_id, title, description, hide,
            );;
 DELIMITER ;
 DELIMITER ;;
-CREATE TRIGGER logcountries_au AFTER UPDATE ON countries FOR EACH ROW
-INSERT INTO logcountries(logger_event, log_id, title, description, hide,
+CREATE TRIGGER countries_log_au AFTER UPDATE ON countries FOR EACH ROW
+INSERT INTO countries_log(logger_event, log_id, title, description, hide,
           log_user_id)
     VALUES (
            'update',
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS regions(
 
 
 
-CREATE TABLE IF NOT EXISTS logregions(
+CREATE TABLE IF NOT EXISTS regions_log(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     logger_event VARCHAR(50),
@@ -229,8 +229,8 @@ CREATE TABLE IF NOT EXISTS logregions(
 );
 
 DELIMITER ;;
-CREATE TRIGGER logregions_ai AFTER INSERT ON regions FOR EACH ROW
-INSERT INTO logregions(logger_event, log_id, title, description,
+CREATE TRIGGER regions_log_ai AFTER INSERT ON regions FOR EACH ROW
+INSERT INTO regions_log(logger_event, log_id, title, description,
                     country_id, hide, log_user_id)
     VALUES (
            'insert',
@@ -243,8 +243,8 @@ INSERT INTO logregions(logger_event, log_id, title, description,
            );;
 DELIMITER ;
 DELIMITER ;;
-CREATE TRIGGER logregions_au AFTER UPDATE ON regions FOR EACH ROW
-INSERT INTO logregions(logger_event, log_id, title, description,
+CREATE TRIGGER regions_log_au AFTER UPDATE ON regions FOR EACH ROW
+INSERT INTO regions_log(logger_event, log_id, title, description,
                     country_id, hide, log_user_id)
     VALUES (
            'update',
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS shops(
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS logshops(
+CREATE TABLE IF NOT EXISTS shops_log(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     logger_event VARCHAR(50),
@@ -294,8 +294,8 @@ CREATE TABLE IF NOT EXISTS logshops(
 );
 
 DELIMITER ;;
-CREATE TRIGGER logshops_ai AFTER INSERT ON shops FOR EACH ROW
-INSERT INTO logshops(logger_event, log_id, country_id, region_id,
+CREATE TRIGGER shops_log_ai AFTER INSERT ON shops FOR EACH ROW
+INSERT INTO shops_log(logger_event, log_id, country_id, region_id,
                       title, shop_address, shop_folder, hide, log_user_id)
     VALUES (
            'insert',
@@ -310,8 +310,8 @@ INSERT INTO logshops(logger_event, log_id, country_id, region_id,
            );;
 DELIMITER ;
 DELIMITER ;;
-CREATE TRIGGER logshops_au AFTER UPDATE ON shops FOR EACH ROW
-INSERT INTO logshops(logger_event, log_id, country_id, region_id,
+CREATE TRIGGER shops_log_au AFTER UPDATE ON shops FOR EACH ROW
+INSERT INTO shops_log(logger_event, log_id, country_id, region_id,
                       title, shop_address, shop_folder, hide, log_user_id)
     VALUES (
            'update',
@@ -358,15 +358,17 @@ CREATE TABLE IF NOT EXISTS images(
 -- ###################################################################
 
 -- images
--- consent: consent to processing of personal data
-CREATE TABLE IF NOT EXISTS user_info(
+-- the table account info stores access data
+-- ip, platform, browser and version
+-- of images and log_login tables
+CREATE TABLE IF NOT EXISTS account_info(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     ts TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     date_server VARCHAR(8) NOT NULL  DEFAULT '',
 
     user_id INT UNSIGNED,
     image_id BIGINT UNSIGNED,
-    log_login_id INT UNSIGNED,
+    log_login_id BIGINT UNSIGNED,
 
     shop_id INT UNSIGNED,
 
