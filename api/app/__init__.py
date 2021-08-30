@@ -15,13 +15,13 @@ from app.resources.user import (
 )
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ['FLASK_SECRET_KEY']
-app.config['DEBUG'] = os.environ['DEBUG']
+app.config["SECRET_KEY"] = os.environ["FLASK_SECRET_KEY"]
+app.config["DEBUG"] = os.environ["DEBUG"]
 app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+mysqlconnector://{os.environ['MYSQL_USER']}:{os.environ['MYSQL_PASSWORD']}@{os.environ['MYSQL_HOST']}:3306/{os.environ['MYSQL_DB']}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['PROPAGATE_EXEPTIONS'] = True
-app.config['JWT_BLACKLIST_ENABLED'] = True
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["PROPAGATE_EXEPTIONS"] = True
+app.config["JWT_BLACKLIST_ENABLED"] = True
+app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = ["access", "refresh"]
 
 # https://flask.palletsprojects.com/en/2.0.x/logging/
 log_format = f'[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
@@ -49,8 +49,9 @@ def log_request_info():
     app.logger.info("######################################################")
 
 @jwt.token_in_blocklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    return decrypted_token['jti'] in BLACKLIST
+def check_if_token_in_blacklist(jwt_header, jwt_payload) -> bool:
+    # https://flask-jwt-extended.readthedocs.io/en/stable/blocklist_and_token_revoking/
+    return jwt_payload["jti"] in BLACKLIST
 
 
 # @jwt.user_claims_loader

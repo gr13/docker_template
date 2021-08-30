@@ -1,3 +1,4 @@
+import logging
 from flask_restful import Resource, reqparse
 from werkzeug.security import safe_str_cmp
 from app.blacklist import BLACKLIST
@@ -15,13 +16,19 @@ from flask_jwt_extended import (
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument(
-    'email',
+    "username",
+    type=str,
+    required=False,
+    help="This field cannot be blanc."
+)
+_user_parser.add_argument(
+    "email",
     type=str,
     required=True,
     help="This field cannot be blanc."
 )
 _user_parser.add_argument(
-    'password',
+    "password",
     type=str,
     required=True,
     help="This field cannot be blank."
@@ -29,14 +36,16 @@ _user_parser.add_argument(
 
 
 class UserRegister(Resource):
+    @jwt_required()
     def post(self):
         data = _user_parser.parse_args()
-        if UserModel.find_by_email(data['email']):
-            return {'message': 'A user with that username already exists.'}, 400
-
-        user = UserModel(data['email'], data['password'])
+        if UserModel.find_by_email(data["email"]):
+            logging.info(f"User with this email is already exists. {data['email']}")
+            return {"message": "A user with that username already exists."}, 400
+        user = UserModel(data["email"], data["username"], data["password"])
         user.save_to_db()
 
+        logging.info(f"User {data['email']} created successfully.")
         return {"message": "User created successfully."}, 201
 
 
@@ -67,6 +76,7 @@ class User(Resource):
                         help="This field accepts only 0 and 1")
 
     @classmethod
+    @jwt_required()
     def get(cls, user_id):
         user = UserModel.find_by_id(user_id)
         if user:
@@ -74,6 +84,7 @@ class User(Resource):
         return {'message': "User not found"}, 404
 
     @classmethod
+    @jwt_required()
     def delete(cls, user_id):
         user = UserModel.find_by_id(user_id)
         if user:
@@ -83,6 +94,7 @@ class User(Resource):
         return {"message": "User not found"}, 404
 
     @classmethod
+    @jwt_required()
     def put(cls, user_id):
         data = User.parser.parse_args()
 
@@ -114,29 +126,32 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_email(data['email'])
 
-        if user and user.right_id > 1 and safe_str_cmp(user.password, data['password']):
+        if user and user.right_id > 1 and user.check_password(data['password']):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
+            logging.info(f"User logged in. {data['email']}")
             return {
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }, 200
-
+        logging.info(f"Invalid credentials. {data['email']}")
         return {"message": "Invalid credentials"}, 401
 
 
 class UserLogout(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         jti = get_jwt()['jti']
         BLACKLIST.add(jti)
+        logging.info(f"Successfully logged out.")
         return {"message": "Successfully logged out."}, 200
 
 
 class UserList(Resource):
+    @jwt_required()
     def get(self):
         items = UserModel.find_all()
-        print("items:", items)
         if items:
             return {"users": [item.json() for item in items]}, 200
+        logging.info(f"Users not found.")
         return {"message": "Users not found."}, 404

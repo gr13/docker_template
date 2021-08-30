@@ -1,3 +1,4 @@
+import logging
 from app.db import db
 from app.models.user_right import UserRightModel
 from sqlalchemy.orm import validates
@@ -11,7 +12,7 @@ class UserModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255))
-    password = db.Column(db.String(60))
+    password = db.Column(db.String(110))
     right_id = db.Column(
         db.Integer,
         db.ForeignKey('rights.id'),
@@ -33,9 +34,10 @@ class UserModel(db.Model):
         assert '@' in email
         return email
 
-    def __init__(self, email, password):
+    def __init__(self, email, username, _password):
         self.email = email
-        self.password = self.set_password(password)
+        self.username = username
+        self.password = self.set_password(_password)
 
     def json(self):
         right = UserRightModel.find_by_id(self.right_id)
@@ -72,7 +74,7 @@ class UserModel(db.Model):
         db.session.commit()
 
     def set_password(self, _password):
-        self.password = generate_password_hash(_password)
+        return generate_password_hash(_password)
 
     def check_password(self, _password):
         return check_password_hash(self.password, _password)
