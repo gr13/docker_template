@@ -10,8 +10,8 @@ The project template will be used
 * initial setup done
 * logging system done
 * Fix running issue done
-* check login system in process
-* Create all of RESTful resources ...
+* check login system done
+* Create all of RESTful resources in process
 * Create CI tests ...
 
 2. Create Vue UI
